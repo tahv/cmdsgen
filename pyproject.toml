@@ -1,0 +1,102 @@
+[project]
+name = "cmdsgen"
+version = "0.1.0"
+description = "Generate stubs for `maya.cmds` from the official Maya Commands Documentation"
+readme = "README.md"
+requires-python = ">=3.13"
+license = "MIT"
+authors = [{ name = "Thibaud Gambier" }]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development",
+]
+dependencies = [
+  "aiohttp>=3.13.3",
+  "aiohttp-client-cache[sqlite]>=0.14.3",
+  "beautifulsoup4>=4.14.3",
+  "cyclopts>=4.5.4",
+  "rich>=14.3.3",
+]
+
+[project.scripts]
+cmdsgen = "cmdsgen.cli:app"
+
+[dependency-groups]
+dev = [
+  "coverage>=7.13.4",
+  "mypy>=1.19.1",
+  "pytest>=9.0.2",
+]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.coverage]
+paths.src = ["src", "*/src", "*\\src"]
+run.source_pkgs = ["cmdsgen"]
+run.branch = true
+run.omit = ["__main__.py"]
+report.show_missing = true
+report.skip_covered = true
+report.exclude_lines = [
+  "# pragma: no cover",
+  "if (False|0|TYPE_CHECKING):",
+  "if __name__ == ['\"]__main__['\"]:",
+  # Protocol: beginning of line or colon + elipsis + eol or comment
+  "(?::\\s+|^\\s+)\\.\\.\\.(?:\\s+#|$)",
+]
+
+[tool.mypy]
+strict = true
+mypy_path = "src"
+files = ["src", "tests"]
+untyped_calls_exclude = ["cyclopts"]
+
+[tool.pytest]
+addopts = [
+  "--doctest-modules",
+  "--durations-min=0.005",
+  "--durations=0",
+]
+minversion = "9.0"
+testpaths = ["src", "tests"]
+
+[tool.ruff]
+src = ["src"]
+lint.preview = false
+lint.select = ["ALL"]
+lint.flake8-tidy-imports.ban-relative-imports = "all"
+lint.pydocstyle.convention = "google"
+lint.isort.required-imports = ["from __future__ import annotations"]
+lint.ignore = [
+  "COM812",  # Trailing comma missing
+  "D100",  # Missing docstring in public module
+  "D104",  # Missing docstring in public package
+  "D105",  # Missing docstring in magic method
+  "D107",  # Missing docstring in `__init__`
+  "FIX002",  # Line contains TODO, consider resolving the issue
+  "PLR0913",  # Too many arguments in function definition
+  "S101",  # Use of `assert` detected
+  "TD003",  # Missing issue link for this TODO
+]
+format.preview = true
+include = ["src/**/*.py", "tests/**/*.py", "**/pyproject.toml"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/test_*.py" = [
+  "D103",  # Missing docstring in public function
+]
+
+[tool.ty]
+analysis.respect-type-ignore-comments = false
+
+[tool.uv]
+default-groups = ["dev"]
+cache-keys = [
+  { file = "pyproject.toml" },
+  { git = { commit = true, tags = true } },
+]
