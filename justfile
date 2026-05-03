@@ -38,3 +38,7 @@ fmt:
 docker tag="cmdsgen:dev":
     docker build --platform linux/amd64 --tag {{ tag }} .
     docker run -it --rm {{ tag }}
+
+# Generate '.github/README.md'
+github-readme:
+    uv run scripts/github-readme.py > .github/README.md
