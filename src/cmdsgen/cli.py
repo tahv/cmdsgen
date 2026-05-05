@@ -119,7 +119,9 @@ def render_commands(commands: Iterable[FetchedCommand]) -> str:
         "",
     ]
     for cmd in commands:
-        lines.extend(o.to_string(overload=True) for o in render_command(cmd))
+        rendered = render_command(cmd)
+        overload = len(rendered) > 1
+        lines.extend(o.to_string(overload=overload) for o in rendered)
     return "\n".join(lines)
 
 
