@@ -345,7 +345,7 @@ class DecodeError(Exception):
     @classmethod
     def from_parse_error[E: Enum](cls, err: ParseError[E], doc: str) -> Self:
         """Initialize from `ParseError`."""
-        return cls(err.msg, doc=doc, pos=err.token.start, end=err.token.end)
+        return cls(err.args[0], doc=doc, pos=err.token.start, end=err.token.end)
 
 
 class ParseError[E: Enum](Exception):
