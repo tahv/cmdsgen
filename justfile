@@ -42,3 +42,7 @@ docker tag="cmdsgen:dev":
 # Generate '.github/README.md'
 github-readme:
     uv run scripts/github-readme.py > .github/README.md
+
+# Perform type-checking with `mypy`
+mypy:
+    uv run -m mypy
