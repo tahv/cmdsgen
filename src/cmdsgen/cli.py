@@ -158,7 +158,7 @@ def debug_rtype(commands: Iterable[FetchedCommand]) -> Table:
     table = Table.grid("command", "rtype", "python", padding=(0, 2))
     for cmd in commands:
         for rtype in cmd.return_types:
-            parsed = parse_rtype(rtype)
+            parsed = " | ".join(parse_rtype(rtype))
             table.add_row(cmd.name, repr(rtype), repr(parsed))
     return table
 
@@ -167,7 +167,7 @@ def debug_rtype_unique(commands: Iterable[FetchedCommand]) -> Table:
     """Parse commands unique return types."""
     table = Table.grid("rtype", "python")
     for rtype in {rtype for cmd in commands for rtype in cmd.return_types}:
-        parsed = parse_rtype(rtype)
+        parsed = " | ".join(parse_rtype(rtype))
         table.add_row(repr(rtype), repr(parsed))
     return table
 

@@ -16,28 +16,42 @@ from cmdsgen.scanner import (
     parse_unsigned_int,
 )
 
-__all__ = ["parse_rtype"]
+__all__ = ["parse_rtype", "parse_rtypes"]
 
 
-def parse_rtype(s: str) -> str:
+def parse_rtypes(*rtypes: str) -> tuple[str, ...]:
+    """Parse Maya return types and returns unique union items.
+
+    Returned tuple is sorted.
+
+    Example:
+        >>> parse_rtypes("string", "double[]", "string[]|double", "float")
+        ('float', 'list[float]', 'list[str]', 'str')
+    """
+    return tuple(sorted({s for rt in rtypes for s in parse_rtype(rt)}))
+
+
+def parse_rtype(s: str) -> tuple[str, ...]:
     """Parse Maya return type and returns union items.
+
+    Returned tuple is sorted.
 
     Raise:
         DecodeError: Failed to parse `s`.
 
     Example:
         >>> parse_rtype("string")
-        'str'
+        ('str',)
         >>> parse_rtype("double[]")
-        'list[float]'
+        ('list[float]',)
         >>> parse_rtype("string[]|double")
-        'list[str] | float'
+        ('float', 'list[str]')
         >>> parse_rtype("boolean")
-        'bool'
+        ('bool',)
     """
     parser = ReturnTypeParser(s)
     try:
-        return parser.parse()
+        return tuple(sorted(parser.parse()))
     except ParseError as exc:
         raise DecodeError.from_parse_error(exc, s) from exc
 
@@ -108,31 +122,31 @@ class ReturnTypeLexer(Lexer[ReturnTypeToken]):
         raise DecodeError(msg, doc=self._scanner.text, pos=start, end=start + 1)
 
 
-class ReturnTypeParser(Parser[str]):
+class ReturnTypeParser(Parser[tuple[str, ...]]):
     """Maya Return Type parser."""
 
     def __init__(self, s: str) -> None:
         lexer = ReturnTypeLexer(s, infinite=True)
         self._tokens: Final = Peekable[Token[ReturnTypeToken]](lexer)
 
-    def parse(self) -> str:
+    def parse(self) -> tuple[str, ...]:
         """Parse tokens."""
         if (peek := self._tokens.peek()).kind == ReturnTypeToken.EOF:
             msg = "Empty string"
             raise ParseError(msg, token=peek)
 
-        union: list[str] = []
+        union: set[str] = set()
         while (peek := self._tokens.peek()).kind != ReturnTypeToken.EOF:
             match peek.kind:
                 case ReturnTypeToken.IDENT:
-                    union.append(self._parse_identifier())
+                    union.add(self._parse_identifier())
                 case ReturnTypeToken.VBAR:
                     next(self._tokens)
                 case _:
                     msg = "Unexpected token {kind}"
                     raise ParseError(msg, token=peek)
 
-        return " | ".join(union)
+        return tuple(union)
 
     def _parse_identifier(self) -> str:
         if (token := next(self._tokens)).kind != ReturnTypeToken.IDENT:

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Literal, cast, get_args
 
 from cmdsgen.fetch import FetchedCommand, FlagMode
 from cmdsgen.flag_parser import parse_flag
-from cmdsgen.rtype_parser import parse_rtype
+from cmdsgen.rtype_parser import parse_rtypes
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -70,7 +70,6 @@ def editable_command_overloads(command: FetchedCommand) -> Iterable[ParsedComman
     if not args:
         return
 
-    rtype = " | ".join({parse_rtype(rt) for rt in command.return_types})
     for edit in cast("tuple[str, ...]", get_args(EditFlag.__value__)):
         yield ParsedCommand(
             name=command.name,
@@ -79,7 +78,7 @@ def editable_command_overloads(command: FetchedCommand) -> Iterable[ParsedComman
                 Argument(edit, "Literal[True]", ArgumentKind.KW_ONLY_ARG),
                 *args,
             ),
-            rtype=rtype,
+            rtype=" | ".join(parse_rtypes(*command.return_types)),
         )
 
 
@@ -98,11 +97,10 @@ def creatable_command_overloads(command: FetchedCommand) -> Iterable[ParsedComma
     if not args:
         return
 
-    rtype = " | ".join({parse_rtype(rt) for rt in command.return_types})
     yield ParsedCommand(
         name=command.name,
         args=(Argument("args", "Any", ArgumentKind.VAR_ARG), *args),
-        rtype=rtype,
+        rtype=" | ".join(parse_rtypes(*command.return_types)),
     )
 
 
