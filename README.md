@@ -48,6 +48,4 @@ pip install --editable . --group dev
 
 ---
 
-<p align="center">
-  <a href="https://www.buymeacoffee.com/tgambier"><img alt="Buy Me a Coffee" style="height: 60px;" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"></a>
-</p>
+<a href="https://www.buymeacoffee.com/tgambier"><img alt="Buy Me a Coffee" style="height: 50px;" height="50" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"></a>
