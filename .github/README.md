@@ -49,3 +49,7 @@ or newer and install the dependencies manually.
 ```console
 pip install --editable . --group dev
 ```
+
+---
+
+<a href="https://www.buymeacoffee.com/tgambier"><img alt="Buy Me a Coffee" style="height: 50px;" height="50" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"></a>
