@@ -253,6 +253,9 @@ def _parse_command_flags(page: BeautifulSoup) -> tuple[FetchedFlag, ...]:
             for tag in prop_elem.select("img")
         )
 
+        if short_name == long_name:
+            short_name = None
+
         flag = FetchedFlag(
             long_name=long_name,
             short_name=short_name,
