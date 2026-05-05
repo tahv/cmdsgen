@@ -131,7 +131,6 @@ def render_command(command: FetchedCommand) -> list[ParsedCommand]:
         overloads.extend(queryable_command_overloads(command))
     if command.is_editable():
         overloads.extend(editable_command_overloads(command))
-    # TODO(tga): multiuse <- curve mel: -p 0 0 0 -p 1 1 1; py: p=[(0, 0, 0), (1, 1, 1)]
     return overloads
 
 

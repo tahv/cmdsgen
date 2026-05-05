@@ -57,7 +57,12 @@ def queryable_command_overloads(command: FetchedCommand) -> Iterable[ParsedComma
 def editable_command_overloads(command: FetchedCommand) -> Iterable[ParsedCommand]:
     """Parse 'edit' mode overloads."""
     args = [
-        Argument(name, parse_flag(flag.type_name), ArgumentKind.KW_ONLY_ARG, "...")
+        Argument(
+            name,
+            parse_flag(flag.type_name, multiuse=FlagMode.MULTI_USE in flag.modes),
+            ArgumentKind.KW_ONLY_ARG,
+            default="...",
+        )
         for flag in command.iter_flags(FlagMode.EDIT)
         for name in flag.names()
         if name != "e"
@@ -81,7 +86,12 @@ def editable_command_overloads(command: FetchedCommand) -> Iterable[ParsedComman
 def creatable_command_overloads(command: FetchedCommand) -> Iterable[ParsedCommand]:
     """Parse 'create' mode overloads."""
     args = [
-        Argument(name, parse_flag(flag.type_name), ArgumentKind.KW_ONLY_ARG, "...")
+        Argument(
+            name,
+            parse_flag(flag.type_name, multiuse=FlagMode.MULTI_USE in flag.modes),
+            ArgumentKind.KW_ONLY_ARG,
+            default="...",
+        )
         for flag in command.iter_flags(FlagMode.CREATE)
         for name in flag.names()
     ]

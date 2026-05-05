@@ -16,7 +16,7 @@ from cmdsgen.scanner import (
 )
 
 
-def parse_flag(s: str) -> str:
+def parse_flag(s: str, *, multiuse: bool = False) -> str:
     """Parse Maya Flag.
 
     Raise:
@@ -34,7 +34,7 @@ def parse_flag(s: str) -> str:
     """
     # TODO(tga): example "[[, boolean, float, ]]" (mel "[ boolean float ]")
     # TODO(tga): example "[int, [, string, ]]" (mel "int [ string ]")
-    parser = FlagParser(s)
+    parser = FlagParser(s, multiuse=multiuse)
     try:
         return parser.parse()
     except ParseError as exc:
@@ -104,9 +104,10 @@ class FlagLexer(Lexer[FlagToken]):
 class FlagParser(Parser[str]):
     """Maya Flag parser."""
 
-    def __init__(self, s: str) -> None:
+    def __init__(self, s: str, *, multiuse: bool = False) -> None:
         lexer = FlagLexer(s, infinite=True)
         self._tokens: Final = Peekable[Token[FlagToken]](lexer)
+        self._multiuse: bool = multiuse
 
     def parse(self) -> str:
         """Parse tokens."""
@@ -127,6 +128,9 @@ class FlagParser(Parser[str]):
         if (peek := self._tokens.peek()).kind != FlagToken.EOF:
             msg = "Expected end of string, got {literal!r}"
             raise ParseError(msg, token=peek)
+
+        if self._multiuse:
+            value = f"list[{value}]"
 
         return value
 
