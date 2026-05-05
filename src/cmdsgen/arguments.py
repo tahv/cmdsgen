@@ -60,6 +60,7 @@ def editable_command_overloads(command: FetchedCommand) -> Iterable[ParsedComman
         Argument(name, parse_flag(flag.type_name), ArgumentKind.KW_ONLY_ARG, "...")
         for flag in command.iter_flags(FlagMode.EDIT)
         for name in flag.names()
+        if name != "e"
     ]
     if not args:
         return
